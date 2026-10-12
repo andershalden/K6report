@@ -1,0 +1,33 @@
+name: k6 Load Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  k6-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout your repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Setup k6 environment on the runner
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+
+      # 3. Run your k6 test script
+      - name: Run k6 test
+        run: k6 run load-test.js
+
+      # 4. Upload the generated HTML report as an artifact
+      - name: Upload k6 HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-summary-report
+          path: summary.html
+          retention-days: 30 # Optional: configure how long to keep the artifact
